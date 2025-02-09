@@ -40,6 +40,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
+  icon?: React.ReactNode;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -51,6 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       isLoading,
       children,
       asChild = false,
+      icon,
       ...props
     },
     ref
@@ -62,9 +64,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {isLoading ? (
+        {isLoading || icon ? (
           <div className="flex items-center gap-2">
-            <Icon.Loading className="!w-4" />
+            {isLoading ? <Icon.Loading className="!w-4" /> : icon}
             {children}
           </div>
         ) : (

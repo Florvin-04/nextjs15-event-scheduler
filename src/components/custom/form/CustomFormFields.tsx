@@ -3,6 +3,7 @@
 import { ControllerType, FormFieldProps } from "@/lib/types";
 import Field from ".";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
+import { cn } from "@/lib/utils";
 
 const RenderInput = ({
   field,
@@ -16,16 +17,19 @@ const RenderInput = ({
     case "password":
       return <Field.InputText field={field} props={props} />;
 
-    // case "textarea":
-    //   return <Field.Textarea field={field} props={props} />;
+    case "textarea":
+      return <Field.Textarea field={field} props={props} />;
+
+    case "switch":
+      return <Field.Switch field={field} props={props} />;
 
     // case "select":
     //   return (
     //     <Field.SelectMenu field={field}>{props.children}</Field.SelectMenu>
     //   );
 
-    // case "number":
-    //   return <Field.InputNumber field={field} props={props} />;
+    case "number":
+      return <Field.InputNumber field={field} props={props} />;
 
     case "customField":
       return props.renderCustomField
@@ -39,7 +43,7 @@ const RenderInput = ({
 export default function CustomFormFields<T extends FieldValues>(
   props: FormFieldProps & { control: Control<T>; name: Path<T>; error?: string }
 ) {
-  const { control, name, id, error: errorMessage } = props;
+  const { control, name, id, error: errorMessage, description } = props;
 
   return (
     <Controller
@@ -47,9 +51,21 @@ export default function CustomFormFields<T extends FieldValues>(
       name={name}
       render={({ field }) => {
         return (
-          <div>
-            <label htmlFor={id}>{props.label}</label>
-            <RenderInput field={field} props={props} />
+          <div className="space-y-1">
+            <div
+              className={cn(
+                "flex flex-col gap-1",
+                props.type === "switch" &&
+                  "items-center flex-row-reverse w-fit"
+              )}
+            >
+              <label htmlFor={id}>{props.label}</label>
+
+              <RenderInput field={field} props={props} />
+            </div>
+            {description && (
+              <p className="text-sm text-gray-500">{description}</p>
+            )}
             {errorMessage && (
               <p className="text-red-500 text-sm">{errorMessage}</p>
             )}

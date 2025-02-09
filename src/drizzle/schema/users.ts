@@ -1,13 +1,8 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-
-const createdAt = timestamp("createdAt").defaultNow();
-const updatedAt = timestamp("updatedAt")
-  .defaultNow()
-  .$onUpdateFn(() => new Date());
-
+import { pgTable, text } from "drizzle-orm/pg-core";
+import { createdAt, updatedAt, id } from "../schemaHelpers";
 
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id,
   email: text("email").notNull().unique(),
   passwordHash: text("passwordHash").notNull(),
   firstName: text("firstName").notNull(),
@@ -15,5 +10,8 @@ export const users = pgTable("users", {
   googleId: text("googleId").unique(),
   createdAt,
   updatedAt,
-
 });
+
+export type UserFromDB = typeof users.$inferSelect;
+
+export type User = Pick<UserFromDB, "id" | "email" | "firstName" | "lastName">;

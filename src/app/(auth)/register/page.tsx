@@ -4,12 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import CustomFormFields from "@/components/custom/form/CustomFormFields";
 import { Button } from "@/components/ui/button";
-import { signUpSchema, signUpSchemaType } from "@/schema/resgiter";
-import { startTransition } from "react";
+import { signUpSchema, signUpSchemaType } from "@/schema/auth";
+import { useTransition } from "react";
 import { handleSignUpAction } from "../action";
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 export default function RegisterPage() {
+  const [isPending, startTransition] = useTransition();
+
   const {
     control,
     handleSubmit,
@@ -22,13 +24,10 @@ export default function RegisterPage() {
       lastName: "",
       password: "",
       confirmPassword: "",
-
     },
   });
 
   const handleSubmitForm = (values: signUpSchemaType) => {
-    console.log({ values });
-
     startTransition(async () => {
       const { error } = await handleSignUpAction(values);
 
@@ -75,7 +74,6 @@ export default function RegisterPage() {
           name="password"
           control={control}
           error={errors.password?.message}
-
         />
         <CustomFormFields
           placeholder="Confirm Password"
@@ -84,7 +82,12 @@ export default function RegisterPage() {
           control={control}
           error={errors.confirmPassword?.message}
         />
-        <Button className="w-full" type="submit">
+        <Button
+          disabled={isPending}
+          isLoading={isPending}
+          className="w-full"
+          type="submit"
+        >
           Register
         </Button>
       </form>

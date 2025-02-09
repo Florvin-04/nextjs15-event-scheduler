@@ -39,3 +39,28 @@ export const signUpSchema = z
   );
 
 export type signUpSchemaType = z.infer<typeof signUpSchema>;
+
+export const signInSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, "required field")
+    .email("Inavlid Email Address"),
+  password: z.string().trim().min(1, "required field"),
+  // .superRefine((val, ctx) => {
+  //   if (!/[A-Z]/.test(val)) {
+  //     ctx.addIssue({
+  //       code: z.ZodIssueCode.custom,
+  //       message: "At least one uppercase letter",
+  //     });
+  //   }
+  //   if (!/[!@#$%^&*(),.?":{}|<>]/.test(val)) {
+  //     ctx.addIssue({
+  //       code: z.ZodIssueCode.custom,
+  //       message: "At least one special character",
+  //     });
+  //   }
+  // }),
+});
+
+export type signInSchemaType = z.infer<typeof signInSchema>;

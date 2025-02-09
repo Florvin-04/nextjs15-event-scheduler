@@ -2,64 +2,45 @@
 
 import CustomFormFields from "@/components/custom/form/CustomFormFields";
 import { Button } from "@/components/ui/button";
+import { signInSchema, signInSchemaType } from "@/schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-export const loginSchema = z.object({
-  username: z.string().trim().min(1, "required field"),
-  password: z
-    .string()
-    .trim()
-    .min(1, "required field")
-    .superRefine((val, ctx) => {
-      if (!/[A-Z]/.test(val)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "At least one uppercase letter",
-        });
-      }
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(val)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "At least one special character",
-        });
-      }
-    }),
-});
-
-export type FormValues = z.infer<typeof loginSchema>;
+import { useTransition } from "react";
+import { handleSignInAction } from "../action";
+import { toast } from "sonner";
 
 export default function LoginPage() {
+  const [isPending, startTransition] = useTransition();
+
   const {
     control,
+
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<signInSchemaType>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       password: "",
-
-      username: "",
+      email: "",
     },
   });
 
-  const handleSubmitForm = (values: FormValues) => {
+  const handleSubmitForm = (values: signInSchemaType) => {
     console.log({ values });
 
-    // startTransition(async () => {
-    //   const { error } = await handleLoginAction(values);
+    startTransition(async () => {
+      const { error } = await handleSignInAction(values);
 
-    //   if (error) {
-    //     toast.error("Something Went Wrong", {
-    //       description: error,
-    //       action: {
-    //         label: "Undo",
-    //         onClick: () => console.log("Undo"),
-    //       },
-    //     });
-    //   }
-    // });
+      if (error) {
+        toast.error("Something Went Wrong", {
+          description: error,
+          action: {
+            label: "Undo",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      }
+    });
   };
 
   return (
@@ -67,12 +48,13 @@ export default function LoginPage() {
       <h1 className="text-2xl font-bold text-center">Login</h1>
       <form className="space-y-3" onSubmit={handleSubmit(handleSubmitForm)}>
         <CustomFormFields
-          placeholder="Username"
+          placeholder="Email"
           type="text"
-          name="username"
+          name="email"
           control={control}
-          error={errors.username?.message}
+          error={errors.email?.message}
         />
+
         <CustomFormFields
           placeholder="Password"
           type="password"
@@ -80,11 +62,16 @@ export default function LoginPage() {
           control={control}
           error={errors.password?.message}
         />
-        <Button className="w-full" type="submit">
+        <Button
+          disabled={isPending}
+          isLoading={isPending}
+          className="w-full"
+          type="submit"
+        >
           Login
-
         </Button>
       </form>
+
     </div>
   );
 }

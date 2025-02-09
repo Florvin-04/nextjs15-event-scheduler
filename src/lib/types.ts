@@ -8,7 +8,8 @@ export type FieldType =
   | "textarea"
   | "select"
   | "customField"
-  | "number";
+  | "number"
+  | "switch";
 
 type RenderCustomFieldParams = {
   field: ControllerType; // Assuming ControllerType is already defined
