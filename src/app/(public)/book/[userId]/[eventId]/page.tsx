@@ -1,17 +1,28 @@
+import { db } from "@/drizzle/db";
+
 type Props = {
-  params: {
-    userId: string;
-    eventId: string;
-  };
+  params: Promise<{ userId: string; eventId: string }>;
 };
 
-export default function PublicBookPage({ params }: Props) {
+export default async function PublicEventPage({ params }: Props) {
+  const paramsData = await params;
+
+  const event = await db.query.EventTable.findFirst({
+    where: (event, { eq, and }) =>
+      and(
+        eq(event.id, paramsData.eventId),
+        eq(event.userId, paramsData.userId),
+        eq(event.isActive, true)
+      ),
+  });
+
+  console.log({ event });
+
   return (
     <div>
       <h1>Public book page</h1>
-      <p>{params.userId}</p>
-      <p>{params.eventId}</p>
+      <p>{paramsData.userId}</p>
+      <p>{paramsData.eventId}</p>
     </div>
   );
-
 }

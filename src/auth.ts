@@ -5,6 +5,16 @@ import { eq } from "drizzle-orm";
 import { db } from "./drizzle/db";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { CONFIG_APP } from "./config";
+import { Google } from "arctic";
+
+export const GOOGLE_URL_CALLBACK = "/api/auth/callback/google";
+
+export const google = new Google(
+  CONFIG_APP.env.GOOGLE_CLIENT_ID!,
+  CONFIG_APP.env.GOOGLE_CLIENT_SECRET!,
+  `${CONFIG_APP.env.NEXT_PUBLIC_BASE_URL}${GOOGLE_URL_CALLBACK}`
+);
 
 export const validateUserSession = cache(async () => {
   const cookieStore = await cookies();
@@ -20,7 +30,6 @@ export const validateUserSession = cache(async () => {
       redirect: redirectTo,
     };
   }
-
 
   const { value: userIdFromCookie } = JSON.parse(sessionCookie.value);
 
@@ -39,5 +48,4 @@ export const validateUserSession = cache(async () => {
     user: user[0],
     redirect: redirectTo,
   };
-
 });

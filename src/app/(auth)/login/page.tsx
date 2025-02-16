@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { useTransition } from "react";
 import { handleSignInAction } from "../action";
 import { toast } from "sonner";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 export default function LoginPage() {
   const [isPending, startTransition] = useTransition();
@@ -69,6 +70,7 @@ export default function LoginPage() {
           Login
         </Button>
       </form>
+      <GoogleSignInButton />
     </div>
   );
 }
