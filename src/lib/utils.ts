@@ -22,3 +22,16 @@ export function formatMinsDurationToHrs(duration: number) {
 
   return `${hoursString} ${minutesString}`;
 }
+
+export function timeToInt(time: string) {
+  return parseFloat(time.replace(":", "."));
+}
+
+export function formatTimezoneOffset(timezone: string) {
+  return new Intl.DateTimeFormat(undefined, {
+    timeZone: timezone,
+    timeZoneName: "shortOffset",
+  })
+    .formatToParts(new Date())
+    .find((part) => part.type === "timeZoneName")?.value;
+}

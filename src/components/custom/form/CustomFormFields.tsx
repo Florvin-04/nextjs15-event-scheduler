@@ -23,10 +23,12 @@ const RenderInput = ({
     case "switch":
       return <Field.Switch field={field} props={props} />;
 
-    // case "select":
-    //   return (
-    //     <Field.SelectMenu field={field}>{props.children}</Field.SelectMenu>
-    //   );
+    case "select":
+      return (
+        <Field.SelectMenu field={field} props={props}>
+          {props.children}
+        </Field.SelectMenu>
+      );
 
     case "number":
       return <Field.InputNumber field={field} props={props} />;
@@ -55,11 +57,10 @@ export default function CustomFormFields<T extends FieldValues>(
             <div
               className={cn(
                 "flex flex-col gap-1",
-                props.type === "switch" &&
-                  "items-center flex-row-reverse w-fit"
+                props.type === "switch" && "items-center flex-row-reverse w-fit"
               )}
             >
-              <label htmlFor={id}>{props.label}</label>
+              {props.label && <label htmlFor={id}>{props.label}</label>}
 
               <RenderInput field={field} props={props} />
             </div>

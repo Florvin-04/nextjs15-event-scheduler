@@ -10,4 +10,4 @@ export const DAYS_OF_WEEK_IN_ORDER = [
   "saturday",
 ] as const;
 
-export type DayOfWeek = (typeof DAYS_OF_WEEK_IN_ORDER)[number];
+export type DayOfWeekType = (typeof DAYS_OF_WEEK_IN_ORDER)[number];

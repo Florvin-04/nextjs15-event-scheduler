@@ -26,8 +26,6 @@ export default function LoginPage() {
   });
 
   const handleSubmitForm = (values: signInSchemaType) => {
-    console.log({ values });
-
     startTransition(async () => {
       const { error } = await handleSignInAction(values);
 
@@ -71,7 +69,6 @@ export default function LoginPage() {
           Login
         </Button>
       </form>
-
     </div>
   );
 }
