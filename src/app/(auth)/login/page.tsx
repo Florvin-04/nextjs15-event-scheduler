@@ -9,13 +9,13 @@ import { useTransition } from "react";
 import { handleSignInAction } from "../action";
 import { toast } from "sonner";
 import GoogleSignInButton from "./GoogleSignInButton";
+import AuthLogin from "./_components/AuthLogin";
 
-export default function LoginPage() {
+function LoginPage() {
   const [isPending, startTransition] = useTransition();
 
   const {
     control,
-
     handleSubmit,
     formState: { errors },
   } = useForm<signInSchemaType>({
@@ -74,3 +74,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default AuthLogin(LoginPage);

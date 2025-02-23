@@ -42,7 +42,7 @@ async function MainLayout({
             {children}
           </div>
         </div> */}
-        <div className="bg-red-500 mt-auto">footer</div>
+        <div className="bg-red-500 mt-auto hidden">footer</div>
       </div>
     </SessionProvider>
   );

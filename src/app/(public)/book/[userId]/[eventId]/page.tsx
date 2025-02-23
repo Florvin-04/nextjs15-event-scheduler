@@ -14,7 +14,6 @@ import {
   endOfDay,
   roundToNearestMinutes,
 } from "date-fns";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -37,17 +36,15 @@ export default async function PublicEventPage({ params }: Props) {
         columns: {
           firstName: true,
           lastName: true,
+          googleRT: true,
         },
       },
     },
   });
 
-  if (event == null) return notFound();
+  if (event == null || event.user.googleRT == null) return notFound();
 
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get("Rtoken");
-
-  const token = await googleAuth.refreshAccessToken(sessionCookie?.value || "");
+  const token = await googleAuth.refreshAccessToken(event.user.googleRT);
 
   const eventPayload = {
     userId: event.userId,
@@ -62,8 +59,6 @@ export default async function PublicEventPage({ params }: Props) {
 
   // get the end date of the current date in 2 months
   const endDate = endOfDay(addMonths(startDate, 2));
-
-  console.log({ startDate, endDate });
 
   const interval = eachMinuteOfInterval(
     { start: startDate, end: endDate },

@@ -1,12 +1,11 @@
 "use server";
 
-import { db } from "@/drizzle/db";
-import { meetingActionSchema, MeetingActionSchemaType } from "@/schema/meeting";
-import { cookies } from "next/headers";
 import { google as googleAuth } from "@/auth";
+import { db } from "@/drizzle/db";
 import { getValidTimesFromSchedule } from "@/lib/utils";
-import { createGoogleCalendarEvent } from "../server/googleCalendar";
+import { meetingActionSchema, MeetingActionSchemaType } from "@/schema/meeting";
 import { redirect } from "next/navigation";
+import { createGoogleCalendarEvent } from "../server/googleCalendar";
 
 export async function createMeeting(unsafeData: MeetingActionSchemaType) {
   const { success, data } = meetingActionSchema.safeParse(unsafeData);
@@ -29,19 +28,17 @@ export async function createMeeting(unsafeData: MeetingActionSchemaType) {
           firstName: true,
           lastName: true,
           email: true,
+          googleRT: true,
         },
       },
     },
   });
 
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get("Rtoken");
-
-  const token = await googleAuth.refreshAccessToken(sessionCookie?.value || "");
-
-  if (event == null) {
+  if (event == null || event.user.googleRT == null) {
     return { error: true };
   }
+
+  const token = await googleAuth.refreshAccessToken(event.user.googleRT);
 
   const validTimes = await getValidTimesFromSchedule({
     event: {

@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
         destination: "/events",
         permanent: true,
       },
+      {
+        source: "/register",
+        destination: "/book",
+        permanent: true,
+      },
+      // {
+      //   source: "/login",
+      //   destination: "/book",
+      //   permanent: true,
+      // },
     ];
   },
 };

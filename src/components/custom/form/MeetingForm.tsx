@@ -236,11 +236,11 @@ export default function MeetingForm({ defaultValues }: Props) {
 
         <div className="flex gap-2 justify-end">
           <Button asChild disabled={isPending} type="button" variant="outline">
-            <Link href="/events">Cancel</Link>
+            <Link href={`/book/${defaultValues.userId}`}>Cancel</Link>
           </Button>
 
           <Button disabled={isPending} isLoading={isPending} type="submit">
-            {defaultValues ? "Update Event" : "Add Event"}
+            Book Event
           </Button>
         </div>
       </form>

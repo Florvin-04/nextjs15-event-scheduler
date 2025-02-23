@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   firstName: text("firstName").notNull(),
   lastName: text("lastName").notNull(),
   googleId: text("googleId").unique(),
+  googleRT: text("googleRT"),
   createdAt,
   updatedAt,
 });

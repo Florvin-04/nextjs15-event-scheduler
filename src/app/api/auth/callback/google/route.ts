@@ -3,6 +3,7 @@ import { google as gooleAuth } from "@/auth";
 import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
 import { OAuth2RequestError } from "arctic";
+import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 
@@ -71,19 +72,12 @@ export async function GET(req: NextRequest) {
     if (userGoogleExists) {
       await createCookieSession({ userId: userGoogleExists.id });
 
-      awaitedCookies.set("Atoken", accessToken, {
-        httpOnly: true, // Secure, prevents JavaScript access
-        secure: process.env.NODE_ENV === "production", // HTTPS only in production
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: "/",
-      });
-
-      awaitedCookies.set("Rtoken", refreshToken, {
-        httpOnly: true, // Secure, prevents JavaScript access
-        secure: process.env.NODE_ENV === "production", // HTTPS only in production
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: "/",
-      });
+      await db
+        .update(users)
+        .set({
+          googleRT: refreshToken,
+        })
+        .where(eq(users.googleId, userInfo.id));
 
       return new Response(null, {
         status: 302,
@@ -100,6 +94,7 @@ export async function GET(req: NextRequest) {
         firstName: userInfo.given_name,
         lastName: userInfo.family_name,
         googleId: userInfo.id,
+        googleRT: refreshToken,
         passwordHash: "",
       })
       .returning({ id: users.id });
