@@ -11,8 +11,13 @@ export async function GET() {
   const url = google.createAuthorizationURL(state, codeVerifier, [
     "email",
     "profile",
+    "openid",
     "https://www.googleapis.com/auth/calendar",
   ]);
+
+  // Append essential params
+  url.searchParams.append("access_type", "offline");
+  url.searchParams.append("prompt", "consent"); // Forces refresh_token to be reissued
 
   cookiesStore.set("state", state, {
     path: "/",

@@ -10,7 +10,7 @@ import CustomFormFields from "./CustomFormFields";
 
 import { createSchedule } from "@/app/(main)/schedules/action";
 import { DayOfWeekType, DAYS_OF_WEEK_IN_ORDER } from "@/lib/constants";
-import { formatTimezoneOffset, timeToInt } from "@/lib/utils";
+import { formatTimezoneOffset, groupBy, timeToInt } from "@/lib/utils";
 import { ScheduleFormSchemaType, scheduleSFormSchema } from "@/schema/schedule";
 import { Plus, X } from "lucide-react";
 import SelectOptionItems from "../SelectItemOptions";
@@ -19,17 +19,6 @@ import FormMessage from "./FormMessage";
 type Props = {
   defaultValues?: ScheduleFormSchemaType;
 };
-
-const groupBy = <T, K extends string | number>(
-  array: T[],
-  getKey: (item: T) => K
-): Record<K, T[]> =>
-  array.reduce((acc, item) => {
-    const key = getKey(item);
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(item);
-    return acc;
-  }, {} as Record<K, T[]>);
 
 export default function ScheduleForm({ defaultValues }: Props) {
   const [isPending, startTransition] = useTransition();
@@ -125,8 +114,6 @@ export default function ScheduleForm({ defaultValues }: Props) {
     //   handleUpdateEvent({ eventData: data, eventId: defaultValues.id });
     //   return;
     // }
-
-    console.log({ data });
 
     handleCreateSchedule(data);
   };

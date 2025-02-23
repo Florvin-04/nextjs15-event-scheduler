@@ -50,3 +50,7 @@ export const scheduleAvailabilityRelations = relations(
     }),
   })
 );
+
+
+
+export type ScheduleAvailabilityTableType = typeof ScheduleAvailabilityTable.$inferSelect;

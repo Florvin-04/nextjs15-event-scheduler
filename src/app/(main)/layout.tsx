@@ -1,20 +1,16 @@
-import { redirect } from "next/navigation";
-import { validateUserSession } from "@/auth";
-import { CalendarRange, User } from "lucide-react";
 import Navlink from "@/components/custom/Navlink";
+import { withAuth } from "@/components/custom/withAuth";
+import { User } from "@/drizzle/schema";
 import SessionProvider from "@/provider/Session";
+import { CalendarRange, User as UserIcon } from "lucide-react";
 
-export default async function MainLayout({
+async function MainLayout({
   children,
+  user,
 }: Readonly<{
   children: React.ReactNode;
+  user: User;
 }>) {
-  const { user } = await validateUserSession();
-
-  if (!user) {
-    return redirect("/register");
-  }
-
   return (
     <SessionProvider value={{ user }}>
       <div className="h-full flex flex-col flex-1">
@@ -31,7 +27,7 @@ export default async function MainLayout({
             </div>
 
             <div className="ml-auto flex items-center gap-2">
-              <User />
+              <UserIcon />
               <span className="sr-only md:not-sr-only">User</span>
             </div>
           </nav>
@@ -51,3 +47,5 @@ export default async function MainLayout({
     </SessionProvider>
   );
 }
+
+export default withAuth(MainLayout, "/login");

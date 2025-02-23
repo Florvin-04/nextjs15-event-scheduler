@@ -1,7 +1,6 @@
-
-import { validateUserSession } from "@/auth";
 import AddNewEventButton from "@/components/custom/AddNewEventButton";
 import CopyButton from "@/components/custom/CopyButton";
+import { withAuth } from "@/components/custom/withAuth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,18 +10,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { db } from "@/drizzle/db";
-import { EventTableType } from "@/drizzle/schema";
+import { EventTableType, User } from "@/drizzle/schema";
 import { cn, formatMinsDurationToHrs } from "@/lib/utils";
 import Link from "next/link";
 import DeleteEventButtonParent from "./_components/DeleteEventButtonParent";
 
-export default async function EventsPage() {
-  const { user, redirect } = await validateUserSession();
-
-  if (!user) {
-    return redirect("/login");
-  }
-
+async function EventsPage({ user }: { user: User }) {
   const events = await db.query.EventTable.findMany({
     where: ({ userId }, { eq }) => eq(userId, user.id),
     orderBy: ({ createdAt }, { desc }) => desc(createdAt),
@@ -56,6 +49,8 @@ export default async function EventsPage() {
     </div>
   );
 }
+
+export default withAuth(EventsPage);
 
 function EventCard({ event }: { event: EventTableType }) {
   const { name, description, duration, isActive } = event;

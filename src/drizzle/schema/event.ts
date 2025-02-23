@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createdAt, updatedAt, id } from "../schemaHelpers";
 import { users } from "./users";
+import { relations } from "drizzle-orm";
 
 export const EventTable = pgTable(
   "events",
@@ -27,5 +28,12 @@ export const EventTable = pgTable(
     userIdIndex: index("userIdIdx").on(table.userId),
   })
 );
+
+export const eventRelations = relations(EventTable, ({ one }) => ({
+  user: one(users, {
+    fields: [EventTable.userId],
+    references: [users.id],
+  }),
+}));
 
 export type EventTableType = typeof EventTable.$inferSelect;

@@ -53,7 +53,7 @@ export default function CustomFormFields<T extends FieldValues>(
       name={name}
       render={({ field }) => {
         return (
-          <div className="space-y-1">
+          <div className="space-y-1 w-full">
             <div
               className={cn(
                 "flex flex-col gap-1",

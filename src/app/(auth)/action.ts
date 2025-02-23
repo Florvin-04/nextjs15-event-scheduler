@@ -34,7 +34,7 @@ export const handleSignUpAction = async (
       .where(eq(users.email, email.toLowerCase()))
       .limit(1);
 
-    console.log({ isUserExist: isUserExist.length, passwordHash });
+    // console.log({ isUserExist: isUserExist.length, passwordHash });
 
     if (isUserExist.length) {
       return { error: "User already exists" };
@@ -50,11 +50,11 @@ export const handleSignUpAction = async (
       })
       .returning();
 
-    const { sessionCookie } = await createCookieSession({
+    await createCookieSession({
       userId: `${newUser[0].id}`,
     });
 
-    console.log({ sessionCookie });
+    // console.log({ sessionCookie });
 
     return redirect("/");
   } catch (error) {

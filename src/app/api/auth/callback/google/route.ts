@@ -39,7 +39,10 @@ export async function GET(req: NextRequest) {
       storedCodeVerifier
     );
 
-    console.log({ token: token.accessToken });
+    const accessToken = token.accessToken();
+    const refreshToken = token.refreshToken();
+
+    // console.log({ token: accessToken, tokens: token });
 
     // const googleUser = await KyInstance.get(
     //   "https://www.googleapis.com/oauth2/v1/userinfo",
@@ -54,7 +57,7 @@ export async function GET(req: NextRequest) {
       "https://www.googleapis.com/oauth2/v1/userinfo",
       {
         headers: {
-          Authorization: `Bearer ${token.accessToken()}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       }
     );
@@ -67,6 +70,20 @@ export async function GET(req: NextRequest) {
 
     if (userGoogleExists) {
       await createCookieSession({ userId: userGoogleExists.id });
+
+      awaitedCookies.set("Atoken", accessToken, {
+        httpOnly: true, // Secure, prevents JavaScript access
+        secure: process.env.NODE_ENV === "production", // HTTPS only in production
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
+
+      awaitedCookies.set("Rtoken", refreshToken, {
+        httpOnly: true, // Secure, prevents JavaScript access
+        secure: process.env.NODE_ENV === "production", // HTTPS only in production
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
 
       return new Response(null, {
         status: 302,
