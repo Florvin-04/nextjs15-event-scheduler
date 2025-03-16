@@ -7,6 +7,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { CONFIG_APP } from "./config";
 import { Google } from "arctic";
+import { redisObj } from "./redis/redis";
 
 export const GOOGLE_URL_CALLBACK = "/api/auth/callback/google";
 
@@ -31,7 +32,22 @@ export const validateUserSession = cache(async () => {
     };
   }
 
-  const { value: userIdFromCookie } = JSON.parse(sessionCookie.value);
+  const { value } = JSON.parse(sessionCookie.value);
+
+  const sessionUser = await redisObj.getUserSession<{
+    id: string;
+  }>({
+    sessionId: value,
+    type: "session",
+  });
+
+  if (!sessionUser) {
+    return {
+      user: null,
+      error: "Unauthorized",
+      redirect: redirectTo,
+    };
+  }
 
   const user = await db
     .select({
@@ -41,7 +57,7 @@ export const validateUserSession = cache(async () => {
       lastName: users.lastName,
     })
     .from(users)
-    .where(eq(users.id, userIdFromCookie))
+    .where(eq(users.id, sessionUser.id))
     .limit(1);
 
   return {
@@ -49,3 +65,13 @@ export const validateUserSession = cache(async () => {
     redirect: redirectTo,
   };
 });
+
+export async function getNewToken(refreshToken: string) {
+  try {
+    const token = await google.refreshAccessToken(refreshToken);
+    return token;
+  } catch (error) {
+    console.error(error);
+    return "error";
+  }
+}

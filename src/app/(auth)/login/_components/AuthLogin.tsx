@@ -30,6 +30,7 @@ export default function AuthLogin<T extends Record<string, unknown>>(
               e.preventDefault();
               if (userInput === process.env.NEXT_PUBLIC_ADMINPASS) {
                 setIsAuthenticated(true);
+                toast.dismiss();
                 return;
               }
               setUserInput("");

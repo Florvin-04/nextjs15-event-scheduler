@@ -1,4 +1,4 @@
-import { google as googleAuth } from "@/auth";
+import { getNewToken } from "@/auth";
 import MeetingForm from "@/components/custom/form/MeetingForm";
 import {
   Card,
@@ -37,6 +37,7 @@ export default async function PublicEventPage({ params }: Props) {
           firstName: true,
           lastName: true,
           googleRT: true,
+          email: true,
         },
       },
     },
@@ -44,7 +45,22 @@ export default async function PublicEventPage({ params }: Props) {
 
   if (event == null || event.user.googleRT == null) return notFound();
 
-  const token = await googleAuth.refreshAccessToken(event.user.googleRT);
+  console.log({ event });
+
+  const token = await getNewToken(event.user.googleRT);
+
+  if (token === "error") {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div>
+          <h1>Please Contact the Admin</h1>
+          <p>Email: {event.user.email}</p>
+        </div>
+      </div>
+    );
+  }
+
+  console.log({ token });
 
   const eventPayload = {
     userId: event.userId,
